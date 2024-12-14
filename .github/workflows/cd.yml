@@ -11,16 +11,22 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Set up Vercel
-        uses: amondnet/vercel-action@v20
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-team-id: ${{ secrets.VERCEL_TEAM_ID }}
-          
-      - name: Trigger Vercel Deploy
+          python-version: 3.9  
+
+      - name: Install dependencies
         run: |
-          vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
+          python -m pip install --upgrade pip
+          pip install flask pytest
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Deploy to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: vercel --prod --token $VERCEL_TOKEN
