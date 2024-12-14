@@ -26,7 +26,7 @@ jobs:
 
       - name: Run tests
         env:
-          PYTHONPATH: ${{ github.workspace }}  # Configura o PYTHONPATH
+          PYTHONPATH: ${{ github.workspace }}
         run: pytest -v
 
   deploy:
@@ -38,9 +38,12 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Vercel CLI
-        run: npm install -g vercel@latest
+        run: npm install -g vercel
+
+      - name: Debug Vercel Token
+        run: echo "Vercel Token: $VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}  # Verifica se o token está sendo passado corretamente
 
       - name: Deploy to Vercel
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}  # Passando o segredo corretamente
-        run: vercel --prod --token $VERCEL_TOKEN --yes  # Passando o token como argumento
+        run: vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --yes
