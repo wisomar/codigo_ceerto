@@ -9,25 +9,34 @@ on:
       - main
 
 jobs:
-  build:
+  setup:
     runs-on: ubuntu-latest
+    outputs:
+      node-version: ${{ steps.set-node.outputs.node-version }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js (ou outra tecnologia, se for o caso)
+      - name: Set up Node.js
+        id: set-node
         uses: actions/setup-node@v3
         with:
           node-version: '16'
 
       - name: Install dependencies
-        run: |
-          npm install
+        run: npm install  # Sem o comando 'cd', já que o package.json está na raiz
+
+  build:
+    runs-on: ubuntu-latest
+    needs: setup
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Build the application
-        run: |
-          npm run build
+        run: npm run build  # Sem o 'cd', já que o build também está na raiz
 
   test:
     runs-on: ubuntu-latest
@@ -37,18 +46,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js (ou outra tecnologia, se for o caso)
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
-      - name: Install dependencies
-        run: |
-          npm install
-
       - name: Run tests
-        run: |
-          npm test
+        run: npm test  # Sem o 'cd'
 
   deploy:
     runs-on: ubuntu-latest
