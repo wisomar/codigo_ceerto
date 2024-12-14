@@ -1,9 +1,9 @@
-name: Deploy to Vercel
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
-      - main  # Ou a branch que você deseja monitorar para deploys automáticos
+      - main
   pull_request:
     branches:
       - main
@@ -11,38 +11,42 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
-    # 1. Checar o código do repositório
+    # 1. Verificar o código do repositório
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # 2. Configurar o Node.js (caso seu projeto use Node)
+    # 2. Configurar a versão do Node.js (caso esteja usando Node.js)
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '16'  # Altere conforme a versão que você precisa
+        node-version: '16'  # Use a versão que seu projeto exige
 
     # 3. Instalar dependências
     - name: Install dependencies
-      run: npm install
+      run: npm install  # Ou o comando correspondente para seu projeto
 
-    # 4. Rodar testes (se necessário)
+    # 4. Rodar testes (ajuste conforme o seu framework de testes)
     - name: Run tests
-      run: npm test  # Modifique conforme o seu processo de testes
+      run: npm test  # Modifique conforme a sua configuração de testes
 
-    # 5. Configurar Vercel CLI
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    # 5. Configurar CLI do Vercel
     - name: Set up Vercel CLI
       run: |
         curl -fsSL https://vercel.com/download -o vercel-cli.tar.gz
         tar -xvzf vercel-cli.tar.gz
         sudo mv vercel /usr/local/bin/
 
-    # 6. Autenticar com Vercel
+    # 6. Autenticar no Vercel
     - name: Vercel Authentication
       run: vercel login ${{ secrets.VERCEL_TOKEN }}
 
-    # 7. Fazer o deploy para o Vercel
+    # 7. Deploy no Vercel
     - name: Deploy to Vercel
       run: vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_TEAM }} --confirm
-
