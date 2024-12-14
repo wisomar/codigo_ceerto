@@ -4,3 +4,4 @@ flask-cors==4.0.0
 sqlalchemy==1.4.25
 werkzeug==2.0.1
 pytest
+npm
