@@ -43,4 +43,4 @@ jobs:
       - name: Deploy to Vercel
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}  # Passando o segredo corretamente
-        run: vercel --prod --token $VERCEL_TOKEN --yes  # Passando o token como argumento
+        run: vercel --prod $VERCEL_TOKEN --yes  # Passando o token como argumento
