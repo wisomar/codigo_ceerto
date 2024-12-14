@@ -43,7 +43,7 @@ jobs:
       - name: Ensure Vercel Token is set
         run: echo "Vercel token is set"
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}  # Verifica se o token está sendo passado corretamente
+          VERCEL_TOKEN: ${{ Q88FHKi4IZYK0FCSkuQI6z0e }}  
 
       - name: Deploy to Vercel
         run: vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --yes
