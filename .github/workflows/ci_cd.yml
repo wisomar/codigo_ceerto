@@ -3,77 +3,65 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # Ou qualquer outra branch que você queira monitorar
+      - main
   pull_request:
     branches:
       - main
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Ambiente Ubuntu para rodar o pipeline
-    
+    runs-on: ubuntu-latest
+
     steps:
-    # 1. Verificar o código do repositório
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # 2. Configurar a versão do Node.js (ajuste conforme sua stack)
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16'  # Altere para a versão que você precisa
+    # Adicionar um comando para listar arquivos e ajudar na depuração
+    - name: List files
+      run: ls -alh
 
-    # 3. Instalar dependências
+    # Caso o package.json esteja em uma subpasta, altere o diretório
+    - name: Set working directory (se necessário)
+      run: cd subpasta
+
+    # Instalar dependências
     - name: Install dependencies
-      run: npm install  # Ou use o comando adequado para seu projeto
+      run: npm install
 
-    # 4. Compilar o código (ajuste conforme a necessidade do seu projeto)
+    # Build do projeto
     - name: Build project
-      run: npm run build  # Altere para o comando de build do seu projeto
+      run: npm run build
 
   test:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Verificar o código do repositório
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # 2. Configurar a versão do Node.js (se necessário para os testes)
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16'  # Altere conforme a versão necessária
-
-    # 3. Instalar dependências (caso não tenha sido feito no build)
     - name: Install dependencies
       run: npm install
 
-    # 4. Rodar os testes
     - name: Run tests
-      run: npm test  # Ajuste o comando de testes conforme sua configuração de testes
+      run: npm test
 
   deploy:
-    needs: [build, test]  # Este job depende do build e dos testes
-
+    needs: [build, test]
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Verificar o código do repositório
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # 2. Configurar CLI do Vercel
+    # Configurar CLI do Vercel e fazer o deploy
     - name: Set up Vercel CLI
       run: |
         curl -fsSL https://vercel.com/download -o vercel-cli.tar.gz
         tar -xvzf vercel-cli.tar.gz
         sudo mv vercel /usr/local/bin/
 
-    # 3. Autenticar no Vercel com token
     - name: Vercel Authentication
       run: vercel login ${{ secrets.VERCEL_TOKEN }}
 
-    # 4. Fazer o deploy para a Vercel
     - name: Deploy to Vercel
       run: vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_TEAM }} --confirm
